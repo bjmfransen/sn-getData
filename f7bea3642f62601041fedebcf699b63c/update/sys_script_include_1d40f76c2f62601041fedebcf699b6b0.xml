@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>global.bjDataUtilsAjax</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>bjDataUtilsAjax</name>
+        <script><![CDATA[var bjDataUtilsAjax = Class.create();
+bjDataUtilsAjax.prototype = Object.extendsObject(bjAbstractAjaxProcessor, {
+    getRecords: function() {
+        // retrieves a number of records and returns them.
+        var table = this.getTypedParameter('table', 'string');
+        var query = this.getTypedParameter('query', 'string');
+        var fields = this.getTypedParameter('fields', 'array');
+        var max = this.getTypedParameter('max', 'number', -1);
+
+        if (table !== '' && query !== '' && fields.length > 0) {
+            var data = new bjDataUtils().getData(table, query, fields, max);
+
+            return JSON.stringify(data);
+        }
+    },
+
+    getCatalogReference: function() {
+        var catItemId = this.getTypedParameter('cat_item', 'string'); // source table
+        var field = this.getTypedParameter('field', 'string'); // reference field
+        var value = this.getTypedParameter('value', 'string'); // reference field's value
+        var fields = this.getTypedParameter('fields', 'array'); // fields in the referenced records that need to be retrieved
+        var checkClassName = this.getTypedParameter('checkClassName', 'boolean', false);
+
+
+        //find the variable record and use it to retrieve the referenced table
+        var gr = new GlideRecord('item_option_new');
+        gr.addQuery('cat_item', catItemId);
+        gr.addQuery('name', field);
+        gr.setLimit(1);
+        gr.query();
+
+        if (gr.next()) {
+            var refTable = gr.getValue('reference');
+        }
+
+        var data = {};
+		var records;
+        if (refTable !== '' && field !== '' && fields.length > 0) {
+            if (checkClassName) {
+                 records = new nsDataUtils().getDataByClass(refTable, 'sys_id=' + value, fields, 1);
+            } else {
+                 records = new nsDataUtils().getData(refTable, 'sys_id=' + value, fields, 1);
+            }
+            if (records.length === 1) {
+                data = records[0];
+            }
+
+        }
+
+
+        return JSON.stringify(data);
+    },
+
+    type: 'bjDataUtilsAjax'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>bert-jan.fransen</sys_created_by>
+        <sys_created_on>2021-02-22 16:45:30</sys_created_on>
+        <sys_id>1d40f76c2f62601041fedebcf699b6b0</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>bjDataUtilsAjax</sys_name>
+        <sys_package display_value="GetData" source="f7bea3642f62601041fedebcf699b63c">f7bea3642f62601041fedebcf699b63c</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="GetData">f7bea3642f62601041fedebcf699b63c</sys_scope>
+        <sys_update_name>sys_script_include_1d40f76c2f62601041fedebcf699b6b0</sys_update_name>
+        <sys_updated_by>bert-jan.fransen</sys_updated_by>
+        <sys_updated_on>2021-02-22 16:47:55</sys_updated_on>
+    </sys_script_include>
+</record_update>

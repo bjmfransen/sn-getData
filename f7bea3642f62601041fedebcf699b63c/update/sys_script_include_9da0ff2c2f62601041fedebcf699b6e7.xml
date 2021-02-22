@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>global.bjAbstractAjaxProcessor</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>bjAbstractAjaxProcessor</name>
+        <script><![CDATA[var bjAbstractAjaxProcessor = Class.create();
+bjAbstractAjaxProcessor.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+  getTypedParameter: function(name, type, nullsub){
+    /**
+     * Generic function reading an ajax parameter, converting it to the desired type
+     * and substituting any null values if necessary
+     * Types allowed are the primitives string, number, boolean, and the objects Date, GlideDate, GlideDateTime
+     * @param {string} name - name of the paramater to be retrieved
+     * @param {string} type - type to be returned.
+     * @returns {?} the retrieved value in the requested data type
+     */
+    // read the parameter. type at this point is String object
+    var value = this.getParameter(name);
+
+    // make sure type is a string literal; value defaults to string
+    type = ''+type || 'string';
+
+    switch (type){
+      case 'string':
+        // convert to string literal. if neither value nor default is provided, returns empty string
+        if (value === null){
+          return nullsub || '';
+        } else {
+          return ''+value;
+        }
+
+      case 'number':
+        // convert to number. if neither value nor default is provided, returns 0
+        if (value === null){
+          return nullsub || 0;
+        } else {
+          return +value;
+        }
+
+      case 'boolean':
+        // convert to boolean. if neither value nor default is provided, false
+        if (value === null){
+          return (typeof nullsub === 'boolean') ? nullsub : false;
+        } else {
+          return !!value;
+        }
+
+      case 'Date':
+        // convert to javascript Date object. if neither value nor default is provided, returns current Date
+        if (value === null){
+          return nullsub || new Date();
+        } else {
+          // Date accepts a number as argument in its constructor; force String object value to a number
+          return new Date(+value);
+        }
+			
+      case 'array':
+        // convert to array, provided value is a comma separated string
+        if (value === null){
+          return nullsub || [];
+        } else {
+          return (''+value).split(',');
+        }
+
+      case 'GlideDate': break; //todo
+      case 'GlideDateTime': break; //todo
+    }
+  
+    return '';
+  }
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>bert-jan.fransen</sys_created_by>
+        <sys_created_on>2021-02-22 16:47:17</sys_created_on>
+        <sys_id>9da0ff2c2f62601041fedebcf699b6e7</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>bjAbstractAjaxProcessor</sys_name>
+        <sys_package display_value="GetData" source="f7bea3642f62601041fedebcf699b63c">f7bea3642f62601041fedebcf699b63c</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="GetData">f7bea3642f62601041fedebcf699b63c</sys_scope>
+        <sys_update_name>sys_script_include_9da0ff2c2f62601041fedebcf699b6e7</sys_update_name>
+        <sys_updated_by>bert-jan.fransen</sys_updated_by>
+        <sys_updated_on>2021-02-22 16:47:17</sys_updated_on>
+    </sys_script_include>
+</record_update>
